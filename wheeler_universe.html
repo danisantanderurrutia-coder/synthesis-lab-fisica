@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio Teórico: Universo de Wheeler & Escala de Planck</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #060c18;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 12px;
+      line-height: 1.5;
+    }
+    .main-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #0a1626;
+      border: 1.5px solid #1e3a5f;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.7);
+    }
+    .header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 16px;
+      gap: 12px;
+    }
+    .title-area h1 {
+      font-size: 22px;
+      font-weight: 900;
+      color: #FDE047;
+      margin: 4px 0 2px 0;
+    }
+    .title-area p {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-family: monospace;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+    }
+    .metrics-group {
+      display: flex;
+      gap: 8px;
+    }
+    .metric-pill {
+      background: #081220;
+      border: 1px solid #1e3a5f;
+      border-radius: 10px;
+      padding: 6px 14px;
+      text-align: center;
+      min-width: 80px;
+    }
+    .metric-pill .lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+    .metric-pill .val {
+      font-size: 16px;
+      font-weight: 900;
+      font-family: monospace;
+    }
+    .tabs-nav {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid #1e293b;
+      padding-top: 14px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: transparent;
+      color: #94a3b8;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 9px 15px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: #f1f5f9;
+    }
+    .tab-btn.active {
+      color: #38bdf8;
+      border-bottom: 2px solid #38bdf8;
+    }
+    .tab-panel {
+      display: none;
+      padding-top: 18px;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+    .card {
+      background: #0d1b2a;
+      border: 1.5px solid #1e293b;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .math-box {
+      background: #050a12;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: monospace;
+      font-size: 12px;
+      text-align: center;
+      margin: 8px 0;
+      overflow-x: auto;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      border-radius: 8px;
+      background: #030712;
+    }
+    .btn {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #0369a1; }
+    .btn-secondary {
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+    }
+    .btn-secondary:hover { background: #334155; }
+    input[type=range] {
+      width: 100%;
+      accent-color: #38bdf8;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-container">
+    
+    <!-- Encabezado con métricas -->
+    <div class="header-bar">
+      <div class="title-area">
+        <span class="badge">⚛️ QED & TCC Lab</span>
+        <h1>Del Universo de Wheeler a la Escala de Planck</h1>
+        <p>Líneas de mundo en Minkowski, prescripción causal iε y límites operacionales cuántico-gravitatorios</p>
+      </div>
+      <div class="metrics-group">
+        <div class="metric-pill">
+          <div class="lbl" style="color: #22d3ee;">Electrones e⁻</div>
+          <div class="val" id="count-electrons" style="color: #22d3ee;">0</div>
+        </div>
+        <div class="metric-pill">
+          <div class="lbl" style="color: #f59e0b;">Positrones e⁺</div>
+          <div class="val" id="count-positrons" style="color: #f59e0b;">0</div>
+        </div>
+        <div class="metric-pill">
+          <div class="lbl" style="color: #10b981;">Carga Neta Q</div>
+          <div class="val" id="count-charge" style="color: #10b981;">-1e</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegación de pestañas -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('sim')">🔭 1. Simulador Espacio-Tiempo</button>
+      <button class="tab-btn" onclick="switchTab('planck')">🔬 2. Escala de Planck & GUP</button>
+      <button class="tab-btn" onclick="switchTab('dirac')">📐 3. 4-Corriente & Dirac</button>
+      <button class="tab-btn" onclick="switchTab('propagator')">⚡ 4. Propagador S_F & Polos iε</button>
+      <button class="tab-btn" onclick="switchTab('rupture')">🌌 5. Ruptura en TCC & Sájarov</button>
+    </div>
+
+    <!-- PESTAÑA 1: SIMULADOR ESPACIO-TIEMPO -->
+    <div id="tab-sim" class="tab-panel active">
+      <div class="card" style="padding: 12px;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: monospace; color: #94a3b8; margin-bottom: 6px;">
+          <span>▲ Tiempo coordenado (t) &nbsp;|&nbsp; ► Espacio (x)</span>
+          <span>
+            <span style="color: #22d3ee;">● dt/dτ > 0 (e⁻)</span> &nbsp;&nbsp; 
+            <span style="color: #f59e0b;">● dt/dτ < 0 (e⁺)</span>
+          </span>
+        </div>
+        <canvas id="spacetimeCanvas" height="230"></canvas>
+      </div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px;">
+          <strong>🔭 Foliación espacial de Cauchy (Σ_t) a t = <span id="label-t" style="color: #38bdf8; font-family: monospace;">0.50</span>:</strong>
+          <span id="turn-event-indicator" style="font-family: monospace; color: #c084fc; font-weight: 700;"></span>
+        </div>
+        <div style="position: relative; height: 50px; background: #030712; border: 1px solid #1e293b; border-radius: 10px; overflow: hidden;" id="slice-universe">
+          <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #334155;"></div>
+          <div id="particles-container" style="position: relative; width: 100%; height: 100%;"></div>
+        </div>
+      </div>
+
+      <div class="card" style="background: #081220;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div style="display: flex; gap: 8px;">
+            <button id="btn-play" class="btn">▶ Evolucionar t</button>
+            <button id="btn-regenerate" class="btn btn-secondary">🔄 Nueva trayectoria</button>
+          </div>
+          <div style="font-size: 12px; color: #94a3b8;">
+            Hebra única continua: <strong style="color: #10b981; font-family: monospace;">1 curva C^∞</strong>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; font-size: 11px; font-family: monospace; color: #94a3b8;">
+          <span>t_pasado</span>
+          <input id="time-slider" type="range" min="0" max="1000" value="500">
+          <span>t_futuro</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 2: ESCALA DE PLANCK Y GUP -->
+    <div id="tab-planck" class="tab-panel">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <h3 style="font-size: 15px; font-weight: 800; color: #FDE047;">El Microscopio Cuántico-Gravitacional</h3>
+            <p style="font-size: 12px; color: #94a3b8;">Colapso de la resolución espacial por producción de microagujeros negros</p>
+          </div>
+          <div id="planck-status-badge" style="font-size: 11px; font-family: monospace; padding: 4px 12px; border-radius: 20px; font-weight: 800; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981;">
+            🟢 Régimen Cuántico Accesible
+          </div>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-family: monospace; margin-bottom: 4px;">
+            <span style="color: #cbd5e1;">Escala de resolución de sonda (Δx):</span>
+            <span id="planck-dx-val" style="color: #38bdf8; font-weight: 800;">1.00 × 10⁻¹⁵ m</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 10px; font-family: monospace; color: #94a3b8;">
+            <span>Protón (10⁻¹⁵ m)</span>
+            <input id="planck-slider" type="range" min="-38" max="-15" step="0.2" value="-15">
+            <span>Sub-Planck (10⁻³⁸ m)</span>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div style="background: #030712; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: monospace; margin-bottom: 6px;">
+              <span style="color: #94a3b8;">Geometría: Onda Δx vs Horizonte R_S</span>
+              <span id="planck-rs-label" style="color: #f59e0b;">R_S: 0 m</span>
+            </div>
+            <canvas id="planckCanvas" height="190"></canvas>
+            <div style="display: flex; justify-content: space-around; font-size: 10px; font-family: monospace; margin-top: 6px;">
+              <span style="color: #22d3ee;">◯ Sonda Δx</span>
+              <span style="color: #f59e0b;">● Agujero Negro R_S</span>
+            </div>
+          </div>
+
+          <div style="background: #030712; border: 1px solid #1e293b; border-radius: 10px; padding: 10px;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; font-family: monospace; margin-bottom: 6px;">
+              <span style="color: #94a3b8;">Espacio de Fases GUP (Δx vs Δp)</span>
+              <span style="color: #c084fc; font-weight: 700;">Δx_mín ≈ ℓ_P</span>
+            </div>
+            <canvas id="gupCanvas" height="190"></canvas>
+            <div style="display: flex; justify-content: space-around; font-size: 10px; font-family: monospace; margin-top: 6px;">
+              <span style="color: #94a3b8;">-- Heisenberg</span>
+              <span style="color: #f59e0b;">-- Gravedad</span>
+              <span style="color: #22d3ee; font-weight: 800;">― GUP Total</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-4" style="margin-top: 12px;">
+          <div class="metric-pill">
+            <div class="lbl">Energía Sonda</div>
+            <div class="val" id="planck-energy-val" style="color: #22d3ee;">1.24 GeV</div>
+          </div>
+          <div class="metric-pill">
+            <div class="lbl">Masa Equivalente</div>
+            <div class="val" id="planck-mass-val" style="color: #c084fc;">2.2 × 10⁻²⁷ kg</div>
+          </div>
+          <div class="metric-pill">
+            <div class="lbl">Radio Schwarzschild</div>
+            <div class="val" id="planck-rs-val" style="color: #f59e0b;">3.2 × 10⁻⁵⁴ m</div>
+          </div>
+          <div class="metric-pill">
+            <div class="lbl">Razón R_S / Δx</div>
+            <div class="val" id="planck-ratio-val" style="color: #10b981;">≪ 1 (Seguro)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4 style="font-size: 13px; color: #FDE047; font-weight: 800; margin-bottom: 6px;">1. Escala de Planck Fundamental (1899)</h4>
+          <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 8px;">
+            Combinando las constantes universales $c$ (relatividad), $\hbar$ (cuántica) y $G$ (gravitación):
+          </p>
+          <div class="math-box" style="color: #22d3ee;">
+            ℓ_P = √(ħ G / c³) ≈ 1.616 × 10⁻³⁵ m<br>
+            t_P = ℓ_P / c ≈ 5.391 × 10⁻⁴⁴ s<br>
+            M_P = √(ħ c / G) ≈ 1.22 × 10¹⁹ GeV/c²
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="font-size: 13px; color: #FDE047; font-weight: 800; margin-bottom: 6px;">2. Principio de Incertidumbre Generalizado</h4>
+          <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 8px;">
+            Conmutador cuántico-gravitatorio $[\hat{x}, \hat{p}] = i\hbar(1 + \beta \ell_P^2 \hat{p}^2 / \hbar^2)$:
+          </p>
+          <div class="math-box" style="color: #f59e0b;">
+            Δx ≥ ħ / (2 Δp) + β ℓ_P² (Δp / ħ)<br>
+            d(Δx)/d(Δp) = 0 ⟹ Δx_mín = √(2β) · ℓ_P
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 3: 4-CORRIENTE & DIRAC -->
+    <div id="tab-dirac" class="tab-panel">
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="font-size: 14px; font-weight: 800; color: #22d3ee; margin-bottom: 8px;">1. Inversión Temporal de la 4-Corriente</h3>
+          <p style="font-size: 12px; color: #cbd5e1;">Para una partícula con carga $q = -e$ y trayectoria $x^\mu(\tau)$:</p>
+          <div class="math-box" style="color: #22d3ee;">
+            j^μ(x) = q ∫ dτ [ dx^μ/dτ ] δ⁴(x - x(τ))
+          </div>
+          <p style="font-size: 12px; color: #cbd5e1;">Bajo inversión de evolución $\tau \to -\tau$ con $dt/d\tau < 0$:</p>
+          <div class="math-box" style="color: #f59e0b;">
+            q_eff = q · sgn(dt/dτ) = (-e) · (-1) = +e
+          </div>
+          <p style="font-size: 12px; color: #94a3b8;">Una partícula de carga $-e$ retrocediendo en el tiempo es físicamente indistinguible de un positrón de carga $+e$ avanzando hacia el futuro.</p>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 14px; font-weight: 800; color: #c084fc; margin-bottom: 8px;">2. Ecuación de Dirac y Estados Stückelberg</h3>
+          <p style="font-size: 12px; color: #cbd5e1;">Ecuación para espín 1/2 en unidades naturales:</p>
+          <div class="math-box" style="color: #c084fc;">
+            (i γ^μ ∂_μ - m) ψ(x) = 0, &nbsp; {γ^μ, γ^ν} = 2η^μν
+          </div>
+          <p style="font-size: 12px; color: #cbd5e1;">Descomposición en soluciones de energía positiva y negativa:</p>
+          <div class="math-box" style="color: #e2e8f0;">
+            ψ(+)(x) = u(p) e^{-i(E_p t - p⃗·x⃗)}<br>
+            ψ(-)(x) = v(p) e^{+i(E_p t - p⃗·x⃗)} ≡ v(p) e^{-i(E_p(-t) + p⃗·x⃗)}
+          </div>
+          <p style="font-size: 12px; color: #94a3b8;">La fase $e^{+iE_p t}$ se reinterpreta causalmente como un estado de energía positiva propagándose hacia el pasado.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 4: PROPAGADOR Y POLOS -->
+    <div id="tab-propagator" class="tab-panel">
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="font-size: 14px; font-weight: 800; color: #22d3ee; margin-bottom: 8px;">Plano Complejo p⁰ (Polos iε)</h3>
+          <canvas id="complexCanvas" height="190"></canvas>
+          <div style="display: flex; justify-content: space-between; font-size: 10px; font-family: monospace; margin-top: 6px;">
+            <span style="color: #f59e0b;">● -E_p + iε (Positrón)</span>
+            <span style="color: #22d3ee;">● +E_p - iε (Electrón)</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 14px; font-weight: 800; color: #FDE047; margin-bottom: 8px;">La Prescripción Causal iε</h3>
+          <div class="math-box" style="color: #22d3ee;">
+            S_F(p) = i (⧸p + m) / (p² - m² + iε)
+          </div>
+          <p style="font-size: 12px; color: #cbd5e1; margin: 8px 0;">
+            Los polos se ubican en $p^0 = \pm (E_p - i\epsilon)$.
+          </p>
+          <div style="background: #050a12; border-left: 3px solid #22d3ee; padding: 8px 12px; font-size: 11px; margin-bottom: 8px; color: #e2e8f0;">
+            <strong>Para t > t':</strong> Cierre inferior. El residuo en $+E_p$ propaga electrones hacia el futuro.
+          </div>
+          <div style="background: #050a12; border-left: 3px solid #f59e0b; padding: 8px 12px; font-size: 11px; color: #e2e8f0;">
+            <strong>Para t < t':</strong> Cierre superior. El residuo en $-E_p$ propaga positrones de energía positiva hacia el futuro.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESTAÑA 5: RUPTURA EN TCC -->
+    <div id="tab-rupture" class="tab-panel">
+      <div class="grid-3">
+        <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
+          <h4 style="font-size: 12px; color: #f87171; text-transform: uppercase; font-weight: 800;">1. Asimetría Leptónica</h4>
+          <p style="font-size: 12px; color: #cbd5e1; margin: 6px 0;">
+            Una línea única exige $N(e^-) \approx N(e^+)$. En el universo real:
+          </p>
+          <div class="math-box" style="color: #f87171;">
+            η_B = (n_B - n_B̄)/n_γ ∼ 6 × 10⁻¹⁰
+          </div>
+          <p style="font-size: 11px; color: #94a3b8;">La asimetría requiere las condiciones de Sájarov (violación de C, CP y número bariónico fuera del equilibrio).</p>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <h4 style="font-size: 12px; color: #38bdf8; text-transform: uppercase; font-weight: 800;">2. Segunda Cuantización</h4>
+          <p style="font-size: 12px; color: #cbd5e1; margin: 6px 0;">
+            Las partículas son operadores de excitación del vacío cuántico:
+          </p>
+          <div class="math-box" style="color: #38bdf8;">
+            |e⁻(p)⟩ = a†(p)|0⟩, &nbsp; |e⁺(p)⟩ = b†(p)|0⟩
+          </div>
+          <p style="font-size: 11px; color: #94a3b8;">Todos los electrones son idénticos porque son modos del mismo campo universal $\hat{\psi}(x)$, no por ser el mismo individuo.</p>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <h4 style="font-size: 12px; color: #c084fc; text-transform: uppercase; font-weight: 800;">3. Estadística de Fermi</h4>
+          <p style="font-size: 12px; color: #cbd5e1; margin: 6px 0;">
+            Anticonmutación canónica fermiónica impone el principio de Pauli:
+          </p>
+          <div class="math-box" style="color: #c084fc;">
+            {a_r(p), a_s†(q)} = (2π)³ δ_rs δ³(p - q)
+          </div>
+          <p style="font-size: 11px; color: #94a3b8;">Garantiza antisimetría $|\Psi_{1,2}\rangle = -|\Psi_{2,1}\rangle$ sin violar causalidad local relativista.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      const tabs = ['sim', 'planck', 'dirac', 'propagator', 'rupture'];
+      tabs.forEach(t => {
+        document.getElementById(`tab-${t}`).classList.remove('active');
+      });
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach(b => b.classList.remove('active'));
+
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      event.target.classList.add('active');
+
+      if (tabId === 'propagator') drawComplexPlane();
+      else if (tabId === 'sim') { resizeCanvas(); draw(); }
+      else if (tabId === 'planck') { updatePlanckSimulation(); }
+    }
+
+    // -------------------------------------------------------------
+    // CANVAS MINKOWSKI
+    // -------------------------------------------------------------
+    const canvas = document.getElementById('spacetimeCanvas');
+    const ctx = canvas.getContext('2d');
+    const slider = document.getElementById('time-slider');
+    const labelT = document.getElementById('label-t');
+    const btnPlay = document.getElementById('btn-play');
+    const btnRegenerate = document.getElementById('btn-regenerate');
+    const countElectrons = document.getElementById('count-electrons');
+    const countPositrons = document.getElementById('count-positrons');
+    const countCharge = document.getElementById('count-charge');
+    const particlesContainer = document.getElementById('particles-container');
+    const turnIndicator = document.getElementById('turn-event-indicator');
+
+    let isPlaying = false;
+    let animFrame = null;
+    let worldline = [];
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+
+    function generateWorldline() {
+      worldline = [];
+      const keyPoints = [
+        { x: 0.10, t: 0.05 },
+        { x: 0.25, t: 0.85 },
+        { x: 0.42, t: 0.20 },
+        { x: 0.58, t: 0.90 },
+        { x: 0.72, t: 0.15 },
+        { x: 0.85, t: 0.75 },
+        { x: 0.92, t: 0.35 }
+      ];
+      for (let i = 1; i < keyPoints.length - 1; i++) {
+        keyPoints[i].x += (Math.random() - 0.5) * 0.04;
+        keyPoints[i].t += (Math.random() - 0.5) * 0.06;
+      }
+      const steps = 600;
+      for (let s = 0; s <= steps; s++) {
+        const u = s / steps;
+        worldline.push(sampleSpline(keyPoints, u));
+      }
+    }
+
+    function sampleSpline(points, tNorm) {
+      const n = points.length - 1;
+      const index = Math.min(Math.floor(tNorm * n), n - 1);
+      const subT = (tNorm * n) - index;
+      const p0 = points[Math.max(index - 1, 0)];
+      const p1 = points[index];
+      const p2 = points[Math.min(index + 1, n)];
+      const p3 = points[Math.min(index + 2, n)];
+      return {
+        x: catmullRom(p0.x, p1.x, p2.x, p3.x, subT),
+        t: catmullRom(p0.t, p1.t, p2.t, p3.t, subT)
+      };
+    }
+
+    function catmullRom(p0, p1, p2, p3, t) {
+      const v0 = (p2 - p0) * 0.5;
+      const v1 = (p3 - p1) * 0.5;
+      const t2 = t * t;
+      const t3 = t * t2;
+      return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
+    }
+
+    function draw() {
+      const rect = canvas.getBoundingClientRect();
+      const W = rect.width;
+      const H = rect.height;
+      const currentTime = parseFloat(slider.value) / 1000;
+      labelT.textContent = currentTime.toFixed(2);
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Rejilla
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+      // Hebra
+      for (let i = 0; i < worldline.length - 1; i++) {
+        const pA = worldline[i];
+        const pB = worldline[i + 1];
+        const xA = pA.x * W; const yA = (1 - pA.t) * H;
+        const xB = pB.x * W; const yB = (1 - pB.t) * H;
+        const forward = pB.t >= pA.t;
+        ctx.beginPath();
+        ctx.moveTo(xA, yA); ctx.lineTo(xB, yB);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = forward ? 'rgba(34, 211, 238, 0.75)' : 'rgba(251, 191, 36, 0.75)';
+        ctx.stroke();
+      }
+
+      // Intersecciones
+      const intersections = [];
+      for (let i = 0; i < worldline.length - 1; i++) {
+        const pA = worldline[i];
+        const pB = worldline[i + 1];
+        if ((pA.t <= currentTime && pB.t >= currentTime) || (pA.t >= currentTime && pB.t <= currentTime)) {
+          const deltaT = pB.t - pA.t;
+          let factor = Math.abs(deltaT) > 1e-6 ? (currentTime - pA.t) / deltaT : 0;
+          intersections.push({ x: pA.x + factor * (pB.x - pA.x), forward: pB.t >= pA.t });
+        }
+      }
+
+      // Línea de corte
+      const presentY = (1 - currentTime) * H;
+      ctx.beginPath();
+      ctx.moveTo(0, presentY); ctx.lineTo(W, presentY);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#f8fafc';
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '11px monospace';
+      ctx.fillText(`Σ_t (t = ${currentTime.toFixed(2)})`, 8, presentY - 6);
+
+      let numE = 0, numP = 0;
+      intersections.forEach(inter => {
+        const ix = inter.x * W;
+        ctx.beginPath();
+        ctx.arc(ix, presentY, 6, 0, Math.PI * 2);
+        ctx.fillStyle = inter.forward ? '#22d3ee' : '#f59e0b';
+        ctx.fill();
+        if (inter.forward) numE++; else numP++;
+      });
+
+      countElectrons.textContent = numE;
+      countPositrons.textContent = numP;
+      const netQ = (-1 * numE) + (+1 * numP);
+      countCharge.textContent = `${netQ >= 0 ? '+' : ''}${netQ}e`;
+
+      render1DUniverse(intersections);
+    }
+
+    function render1DUniverse(intersections) {
+      particlesContainer.innerHTML = '';
+      let nearTurn = false;
+      intersections.forEach(inter => {
+        const dot = document.createElement('div');
+        dot.style.position = 'absolute';
+        dot.style.top = '50%';
+        dot.style.transform = 'translate(-50%, -50%)';
+        dot.style.left = `${inter.x * 100}%`;
+        dot.style.display = 'flex';
+        dot.style.flexDirection = 'column';
+        dot.style.alignItems = 'center';
+
+        const color = inter.forward ? '#22d3ee' : '#f59e0b';
+        const label = inter.forward ? 'e⁻' : 'e⁺';
+        dot.innerHTML = `
+          <div style="width: 14px; height: 14px; border-radius: 50%; background: ${color}; box-shadow: 0 0 10px ${color}; border: 2px solid white;"></div>
+          <span style="font-size: 10px; font-weight: 800; font-family: monospace; color: ${color}; margin-top: 2px;">${label}</span>
+        `;
+        particlesContainer.appendChild(dot);
+      });
+
+      for (let i = 0; i < intersections.length; i++) {
+        for (let j = i + 1; j < intersections.length; j++) {
+          if (intersections[i].forward !== intersections[j].forward && Math.abs(intersections[i].x - intersections[j].x) < 0.035) {
+            nearTurn = true;
+          }
+        }
+      }
+      turnIndicator.textContent = nearTurn ? '⚡ Evento Vértice: Aniquilación / Creación (e⁻ + e⁺ ⟷ γ)' : '';
+    }
+
+    slider.addEventListener('input', draw);
+    btnPlay.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      btnPlay.textContent = isPlaying ? '⏸ Pausar' : '▶ Evolucionar t';
+      if (isPlaying) animate(); else cancelAnimationFrame(animFrame);
+    });
+
+    function animate() {
+      slider.value = (parseInt(slider.value, 10) + 3) % 1000;
+      draw();
+      if (isPlaying) animFrame = requestAnimationFrame(animate);
+    }
+
+    btnRegenerate.addEventListener('click', () => {
+      generateWorldline();
+      draw();
+    });
+
+    // -------------------------------------------------------------
+    // PLANO COMPLEJO S_F
+    // -------------------------------------------------------------
+    function drawComplexPlane() {
+      const c = document.getElementById('complexCanvas');
+      if (!c) return;
+      const rect = c.getBoundingClientRect();
+      c.width = rect.width * window.devicePixelRatio;
+      c.height = rect.height * window.devicePixelRatio;
+      const ctxC = c.getContext('2d');
+      ctxC.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const W = rect.width, H = rect.height;
+      const cx = W / 2, cy = H / 2;
+
+      ctxC.clearRect(0, 0, W, H);
+      ctxC.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctxC.lineWidth = 1;
+      ctxC.beginPath();
+      ctxC.moveTo(15, cy); ctxC.lineTo(W - 15, cy);
+      ctxC.moveTo(cx, 15); ctxC.lineTo(cx, H - 15);
+      ctxC.stroke();
+
+      ctxC.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctxC.font = '10px monospace';
+      ctxC.fillText('Re(p⁰)', W - 45, cy - 8);
+      ctxC.fillText('Im(p⁰)', cx + 8, 24);
+
+      const poleDist = W * 0.25;
+      const eps = 18;
+      // -Ep + iε
+      ctxC.fillStyle = '#f59e0b';
+      ctxC.font = '16px monospace';
+      ctxC.fillText('✕', cx - poleDist - 6, cy - eps + 5);
+      // +Ep - iε
+      ctxC.fillStyle = '#22d3ee';
+      ctxC.fillText('✕', cx + poleDist - 6, cy + eps + 5);
+
+      // Contorno
+      ctxC.strokeStyle = '#a855f7';
+      ctxC.lineWidth = 2;
+      ctxC.beginPath();
+      ctxC.moveTo(25, cy);
+      ctxC.lineTo(cx - poleDist - 25, cy);
+      ctxC.bezierCurveTo(cx - poleDist - 10, cy, cx - poleDist - 10, cy + 22, cx - poleDist + 15, cy + 22);
+      ctxC.lineTo(cx + poleDist - 15, cy + 22);
+      ctxC.bezierCurveTo(cx + poleDist + 10, cy + 22, cx + poleDist + 10, cy, cx + poleDist + 25, cy);
+      ctxC.lineTo(W - 25, cy);
+      ctxC.stroke();
+
+      ctxC.fillStyle = '#c084fc';
+      ctxC.font = '11px monospace';
+      ctxC.fillText('Contorno C_Feynman', cx - 55, cy + 38);
+    }
+
+    // -------------------------------------------------------------
+    // SIMULADOR PLANCK & GUP
+    // -------------------------------------------------------------
+    const planckSlider = document.getElementById('planck-slider');
+    const planckDxVal = document.getElementById('planck-dx-val');
+    const planckRsLabel = document.getElementById('planck-rs-label');
+    const planckStatusBadge = document.getElementById('planck-status-badge');
+    const planckEnergyVal = document.getElementById('planck-energy-val');
+    const planckMassVal = document.getElementById('planck-mass-val');
+    const planckRsVal = document.getElementById('planck-rs-val');
+    const planckRatioVal = document.getElementById('planck-ratio-val');
+    const planckCanvas = document.getElementById('planckCanvas');
+    const gupCanvas = document.getElementById('gupCanvas');
+
+    const L_PLANCK = 1.616255e-35;
+
+    function updatePlanckSimulation() {
+      if (!planckSlider) return;
+      const logDx = parseFloat(planckSlider.value);
+      const dx = Math.pow(10, logDx);
+
+      const E_joules = 3.1615e-26 / dx;
+      const E_gev = E_joules / 1.60218e-10;
+      const mass_kg = E_joules / 9e16;
+      const Rs = (2 * Math.pow(L_PLANCK, 2)) / dx;
+      const ratio = Rs / dx;
+
+      let labelName = "";
+      if (logDx >= -15.5) labelName = " (Protón)";
+      else if (logDx >= -18.5) labelName = " (Límite LHC)";
+      else if (Math.abs(logDx - (-34.8)) < 1.0) labelName = " (Escala de Planck ℓ_P)";
+      else if (logDx < -34.8) labelName = " (Régimen Sub-Planckiano)";
+
+      planckDxVal.textContent = `${dx.toExponential(2)} m${labelName}`;
+      planckRsLabel.textContent = `R_S = ${Rs.toExponential(2)} m`;
+      planckRsVal.textContent = `${Rs.toExponential(2)} m`;
+      planckEnergyVal.textContent = E_gev < 1e6 ? `${E_gev.toFixed(1)} GeV` : `${E_gev.toExponential(2)} GeV`;
+      planckMassVal.textContent = `${mass_kg.toExponential(2)} kg`;
+
+      if (ratio < 0.1) {
+        planckStatusBadge.textContent = "🟢 Régimen Cuántico Accesible";
+        planckStatusBadge.style.color = "#10b981";
+        planckStatusBadge.style.borderColor = "#10b981";
+        planckRatioVal.textContent = `${ratio.toExponential(1)} (Seguro)`;
+        planckRatioVal.style.color = "#10b981";
+      } else if (ratio <= 1.2) {
+        planckStatusBadge.textContent = "🟡 Umbral de Planck (Δx ~ R_S)";
+        planckStatusBadge.style.color = "#f59e0b";
+        planckStatusBadge.style.borderColor = "#f59e0b";
+        planckRatioVal.textContent = `~ ${ratio.toFixed(2)} (Frontera)`;
+        planckRatioVal.style.color = "#f59e0b";
+      } else {
+        planckStatusBadge.textContent = "🔴 ¡Colapso en Microagujero Negro!";
+        planckStatusBadge.style.color = "#ef4444";
+        planckStatusBadge.style.borderColor = "#ef4444";
+        planckRatioVal.textContent = `${ratio.toExponential(1)} (Atrapado)`;
+        planckRatioVal.style.color = "#ef4444";
+      }
+
+      drawPlanckCanvas(dx, Rs, ratio);
+      drawGUP(logDx);
+    }
+
+    function drawPlanckCanvas(dx, Rs, ratio) {
+      if (!planckCanvas) return;
+      const rect = planckCanvas.getBoundingClientRect();
+      planckCanvas.width = rect.width * window.devicePixelRatio;
+      planckCanvas.height = rect.height * window.devicePixelRatio;
+      const ctxP = planckCanvas.getContext('2d');
+      ctxP.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const W = rect.width, H = rect.height;
+      const cx = W / 2, cy = H / 2;
+
+      ctxP.clearRect(0, 0, W, H);
+      const baseR = 40;
+      let Rs_vis = ratio > 1e-10 ? baseR * Math.pow(ratio, 0.45) : 0;
+      Rs_vis = Math.min(Rs_vis, W * 0.45);
+
+      // Onda Sonda
+      ctxP.beginPath();
+      ctxP.arc(cx, cy, baseR, 0, Math.PI * 2);
+      ctxP.strokeStyle = '#22d3ee';
+      ctxP.lineWidth = 2;
+      ctxP.setLineDash([4, 4]);
+      ctxP.stroke();
+      ctxP.setLineDash([]);
+      ctxP.fillStyle = 'rgba(34, 211, 238, 0.08)';
+      ctxP.fill();
+
+      // Agujero negro
+      if (Rs_vis > 2) {
+        ctxP.beginPath();
+        ctxP.arc(cx, cy, Rs_vis, 0, Math.PI * 2);
+        ctxP.fillStyle = '#000000';
+        ctxP.fill();
+        ctxP.strokeStyle = ratio >= 1 ? '#ef4444' : '#f59e0b';
+        ctxP.lineWidth = 2.5;
+        ctxP.stroke();
+      }
+    }
+
+    function drawGUP(logDx) {
+      if (!gupCanvas) return;
+      const rect = gupCanvas.getBoundingClientRect();
+      gupCanvas.width = rect.width * window.devicePixelRatio;
+      gupCanvas.height = rect.height * window.devicePixelRatio;
+      const ctxG = gupCanvas.getContext('2d');
+      ctxG.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const W = rect.width, H = rect.height;
+
+      ctxG.clearRect(0, 0, W, H);
+      const pad = 30;
+      ctxG.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctxG.lineWidth = 1;
+      ctxG.beginPath();
+      ctxG.moveTo(pad, H - pad); ctxG.lineTo(W - 10, H - pad);
+      ctxG.moveTo(pad, H - pad); ctxG.lineTo(pad, 10);
+      ctxG.stroke();
+
+      const pMin = 0.25, pMax = 4.5;
+      const xMin = pad + 10, xMax = W - 20;
+      const yBottom = H - pad - 10, yTop = 20;
+      function mapP(p) { return xMin + ((p - pMin) / (pMax - pMin)) * (xMax - xMin); }
+      function mapY(yVal) { return yBottom - (Math.min(Math.max((yVal - 1.4) / 4.5, 0), 1)) * (yBottom - yTop); }
+
+      // Curva GUP
+      ctxG.beginPath();
+      ctxG.lineWidth = 2.5;
+      ctxG.strokeStyle = '#22d3ee';
+      for (let p = pMin; p <= pMax; p += 0.05) {
+        const px = mapP(p);
+        const py = mapY(1 / p + p);
+        if (p === pMin) ctxG.moveTo(px, py); else ctxG.lineTo(px, py);
+      }
+      ctxG.stroke();
+
+      // Mínimo Planck
+      const minX = mapP(1.0), minY = mapY(2.0);
+      ctxG.beginPath(); ctxG.arc(minX, minY, 5, 0, Math.PI * 2);
+      ctxG.fillStyle = '#a855f7'; ctxG.fill();
+
+      // Posición actual
+      const pProbe = Math.min(Math.max(0.3 + ((-15 - logDx) / 23) * 3.8, pMin), pMax);
+      const probeX = mapP(pProbe), probeY = mapY(1 / pProbe + pProbe);
+      ctxG.beginPath(); ctxG.arc(probeX, probeY, 6, 0, Math.PI * 2);
+      ctxG.fillStyle = '#ef4444'; ctxG.fill();
+    }
+
+    if (planckSlider) planckSlider.addEventListener('input', updatePlanckSimulation);
+    window.addEventListener('resize', () => { resizeCanvas(); draw(); drawComplexPlane(); updatePlanckSimulation(); });
+
+    resizeCanvas();
+    generateWorldline();
+    draw();
+    updatePlanckSimulation();
+  </script>
+</body>
+</html>
